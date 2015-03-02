@@ -1,40 +1,30 @@
 package com.github.disc99.orm;
 
+import static com.github.disc99.util.Throwables.uncheck;
+
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.function.Consumer;
 
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
-import javax.persistence.Id;
 
 import org.junit.Test;
 
 public class EntityManagerImplTest {
 
-    private static final String password = "";
+    private static final String URL = "jdbc:h2:file:~/test";
+    private static final String USER = "sa";
+    private static final String PASSWORD = "";
 
-    private static final String user = "sa";
-
-    private static final String url = "jdbc:h2:file:~/test";
-
-    private String driver = "org.h2.Driver";
-
-    private final String createPerson = "CREATE TABLE PERSON(ID INT, ADDR VARCHAR(40))";
-    private final String insertPerson = "INSERT INTO PERSON VALUES (?, ?)";
-    private final String selectPerson = "SELECT ID, ADDR FROM PERSON ORDER BY ID";
-    private static final String dropPersion = "DROP TABLE PERSON";
-
-    void execute(Connection conn, String sql, Consumer<PreparedStatement> query) {
-
-        try (PreparedStatement ps = conn.prepareStatement(sql);) {
-            query.accept(ps);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    private static final String CREATE_PERSON = "CREATE TABLE PERSON(ID INT, NAME VARCHAR)";
+    private static final String INSERT_PERSON = "INSERT INTO PERSON VALUES (?, ?)";
+    private static final String SELECT_PERSON = "SELECT ID, NAME FROM PERSON ORDER BY ID";
+    private static final String DROP_PERSION = "DROP TABLE PERSON";
 
     @Test
     public void test() {
@@ -44,75 +34,156 @@ public class EntityManagerImplTest {
         EntityManager em = new EntityManagerImpl();
         em.persist(p);
 
-        try (Connection conn = DriverManager.getConnection(url, user, password);) {
-            Class.forName(driver);
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);) {
 
             conn.setAutoCommit(false);
 
-            execute(conn, createPerson, ps -> {
-                try {
-                    ps.executeUpdate();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+            execute(conn, CREATE_PERSON, uncheck(ps -> ps.executeUpdate()));
 
-            execute(conn, insertPerson, ps -> {
-                try {
-                    ps.setInt(1, 1956);
-                    ps.setString(2, "Webster St.");
-                    ps.executeUpdate();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+            execute(conn, INSERT_PERSON, uncheck(ps -> {
+                ps.setInt(1, 1956);
+                ps.setString(2, "Webster St.");
+                ps.executeUpdate();
+            }));
 
-            execute(conn, selectPerson, ps -> {
-                try {
-                    ResultSet rs = ps.executeQuery();
-                    while (rs.next()) {
-                        System.out.println("ID=" + rs.getInt("ID") + " ADDR=" + rs.getString("ADDR"));
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+            execute(conn, SELECT_PERSON, uncheck(ps -> {
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    System.out.println("ID=" + rs.getInt("ID") + " NAME=" + rs.getString("NAME"));
                 }
-            });
+            }));
 
-            execute(conn, dropPersion, ps -> {
-                try {
-                    ps.executeUpdate();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+            execute(conn, DROP_PERSION, uncheck(ps -> ps.executeUpdate()));
 
             conn.rollback();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void t2() {
+        Person p = new Person();
+        p.setId(10L);
+        p.setName("tom");
+
+        Executer executer = new Executer();
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);) {
+
+            conn.setAutoCommit(false);
+
+            // executer.create(p);
+            execute(conn, CREATE_PERSON, uncheck(ps -> ps.executeUpdate()));
+
+            executer.insert(p);
+
+            // executer.select(p);
+            // executer.save(p);
+            // executer.delete(p);
+
+            // execute(conn, INSERT_PERSON, uncheck(ps -> {
+            // ps.setInt(1, 1956);
+            // ps.setString(2, "Webster St.");
+            // ps.executeUpdate();
+            // }));
+
+            execute(conn, SELECT_PERSON, uncheck(ps -> {
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    System.out.println("ID=" + rs.getInt("ID") + " NAME=" + rs.getString("NAME"));
+                }
+            }));
+
+            execute(conn, DROP_PERSION, uncheck(ps -> ps.executeUpdate()));
+
+            conn.rollback();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    void execute(Connection conn, String sql, Consumer<PreparedStatement> query) {
+        try (PreparedStatement ps = conn.prepareStatement(sql);) {
+            query.accept(ps);
+        } catch (Exception e) {
+            throw new DataAccessException(e);
+        }
+    }
+
+    @Test
+    public void testName() throws Exception {
+        A a = new A();
+        Field f = a.getClass().getDeclaredField("num");
+
+        System.out.println(f.getType().getClass());
+    }
 }
 
-@Entity
-class Person {
-    @Id
-    private Long id;
-    private String name;
+class A {
+    private String str;
+    private int num;
 
-    public Long getId() {
-        return id;
+    public String getStr() {
+        return str;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setStr(String str) {
+        this.str = str;
     }
 
-    public String getName() {
-        return name;
+    public int getNum() {
+        return num;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNum(int num) {
+        this.num = num;
     }
+
+}
+
+class PreparedStatements {
+    /**
+     * Set params for {@link PreparedStatement}.
+     * 
+     * @param ps
+     * @param fields
+     */
+    public void set(PreparedStatement ps, List<Field> fields) {
+        // fields.stream()
+        // .forEach(field -> {
+        // setParam(ps, field.getType(), field.);
+        // });
+
+    }
+
+    public static PreparedStatement createInsert(Connection conn, String sql, TableEntity<?> table) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement(sql);
+        // table.getColumns().stream()
+        // .forEach(colum -> {
+        // set(ps, colum.getType(), num, getter);
+        // });
+
+        return ps;
+    }
+
+    // private static void set(PreparedStatement ps, Type type, int num,
+    // Supplier<?> getter) {
+    // switch (type) {
+    // case IDENTITY:
+    // ps.setInt(num, (int) getter.get());
+    // break;
+    // case INT:
+    // ps.setInt(num, (int) getter.get());
+    // break;
+    // case LONG:
+    // ps.setLong(num, (long) getter.get());
+    // break;
+    // case VARCHAR:
+    // ps.setString(num, (String) getter.get());
+    // break;
+    // }
+    // }
 }
