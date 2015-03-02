@@ -1,11 +1,10 @@
 package com.github.disc99.orm;
 
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.LongStream.range;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
 public enum QueryBuilder {
     INSTANCE;
@@ -25,7 +24,7 @@ public enum QueryBuilder {
     }
 
     public <T> String create(TableEntity<T> table) {
-        return String.format(Query.INSERT.template, table.getName(), createColumnDefinitions(table));
+        return String.format(Query.CREATE.template, table.getName(), createColumnDefinitions(table));
     }
 
     public <T> String insert(TableEntity<T> table) {
@@ -35,13 +34,13 @@ public enum QueryBuilder {
     private <T> String createColumnDefinitions(TableEntity<T> table) {
         List<String> definitions = new ArrayList<>();
         for (int i = 0; i < table.getColumnSize(); i++) {
-            definitions.add(table.getColumnType(i) + " " + table.getColumnName(i));
+            definitions.add(table.getColumnName(i) + " " + table.getColumnType(i));
         }
-        return definitions.stream().collect(Collectors.joining(", "));
+        return definitions.stream().collect(joining(", "));
     }
 
     private String createQuestions(long num) {
-        return LongStream.range(0, num).mapToObj(l -> "? ").collect(joining(","));
+        return range(0, num).mapToObj(l -> "? ").collect(joining(","));
     }
 
 }

@@ -17,6 +17,7 @@ public class Executer {
     <T> void create(T entity) {
         TableEntity<T> table = new TableEntity<>(entity.getClass());
         String sql = QueryBuilder.INSTANCE.create(table);
+        System.out.println(sql);
         update(sql, uncheck(ps -> ps.executeUpdate()));
     }
 

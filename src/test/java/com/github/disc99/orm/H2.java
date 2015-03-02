@@ -1,26 +1,37 @@
 package com.github.disc99.orm;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 public class H2 implements Database {
 
-    public enum Type {
-        IDENTITY(Integer.class),
-        INT(Integer.class),
-        LONG(Integer.class),
-        VARCHAR(String.class),
-        BOOLEAN(Boolean.class), ;
-        public Class<?> clazz;
+    // public enum Type {
+    // IDENTITY(Integer.class),
+    // INT(Integer.class),
+    // LONG(Integer.class),
+    // VARCHAR(String.class),
+    // BOOLEAN(Boolean.class), ;
+    // public Class<?> clazz;
+    //
+    // private Type(Class<?> clazz) {
+    // this.clazz = clazz;
+    // }
+    // }
 
-        private Type(Class<?> clazz) {
-            this.clazz = clazz;
-        }
+    private static final Map<Class<?>, String> typeMapping;
+    static {
+        typeMapping = new HashMap<>();
+        typeMapping.put(Integer.class, "INT");
+        typeMapping.put(int.class, "INT");
+        typeMapping.put(Long.class, "LONG");
+        typeMapping.put(String.class, "VARCHAR");
     }
 
     @Override
     public String getType(Field field) {
-        // TODO Auto-generated method stub
-        return null;
+        // TODO IDENTITY and more...
+        return typeMapping.get(field.getType());
     }
 
 }

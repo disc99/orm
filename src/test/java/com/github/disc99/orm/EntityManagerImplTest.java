@@ -74,8 +74,8 @@ public class EntityManagerImplTest {
 
             conn.setAutoCommit(false);
 
-            // executer.create(p);
-            execute(conn, CREATE_PERSON, uncheck(ps -> ps.executeUpdate()));
+            executer.create(p);
+            // execute(conn, CREATE_PERSON, uncheck(ps -> ps.executeUpdate()));
 
             executer.insert(p);
 

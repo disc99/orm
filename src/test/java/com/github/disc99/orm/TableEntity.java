@@ -110,7 +110,7 @@ public class TableEntity<T> {
     // }
 
     public String getColumnName(int i) {
-        // TODO Auto-generated method stub
-        return null;
+        // TODO snake case
+        return getPropertyDescriptor(i).getDisplayName();
     }
 }
