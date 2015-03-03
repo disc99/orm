@@ -1,5 +1,7 @@
 package com.github.disc99.transaction;
 
+import java.sql.Connection;
+
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.InvalidTransactionException;
@@ -10,6 +12,10 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 public class JdbcTransactionManager implements TransactionManager {
+
+    public Connection getConnection() {
+        return ConnectionHandler.getConnection();
+    }
 
     @Override
     public void begin() throws NotSupportedException, SystemException {
