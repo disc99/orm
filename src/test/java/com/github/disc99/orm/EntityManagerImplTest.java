@@ -75,19 +75,8 @@ public class EntityManagerImplTest {
             conn.setAutoCommit(false);
 
             executer.create(Person.class);
-            // execute(conn, CREATE_PERSON, uncheck(ps -> ps.executeUpdate()));
 
             executer.insert(p);
-
-            // executer.select(p);
-            // executer.save(p);
-            // executer.delete(p);
-
-            // execute(conn, INSERT_PERSON, uncheck(ps -> {
-            // ps.setInt(1, 1956);
-            // ps.setString(2, "Webster St.");
-            // ps.executeUpdate();
-            // }));
 
             execute(conn, SELECT_PERSON, uncheck(ps -> {
                 ResultSet rs = ps.executeQuery();
