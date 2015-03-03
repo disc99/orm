@@ -68,13 +68,13 @@ public class EntityManagerImplTest {
         p.setId(10L);
         p.setName("tom");
 
-        Executer executer = new Executer();
+        QueryExecuter executer = new QueryExecuter();
 
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);) {
 
             conn.setAutoCommit(false);
 
-            executer.create(p);
+            executer.create(Person.class);
             // execute(conn, CREATE_PERSON, uncheck(ps -> ps.executeUpdate()));
 
             executer.insert(p);
@@ -96,7 +96,8 @@ public class EntityManagerImplTest {
                 }
             }));
 
-            execute(conn, DROP_PERSION, uncheck(ps -> ps.executeUpdate()));
+            executer.drop(Person.class);
+            // execute(conn, DROP_PERSION, uncheck(ps -> ps.executeUpdate()));
 
             conn.rollback();
 
