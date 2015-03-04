@@ -17,8 +17,8 @@ public enum QueryBuilder {
         CREATE("CREATE TABLE %s(%s)"),
         INSERT("INSERT INTO %s VALUES (%s)"),
         SELECT("SELECT %s FROM %s"),
-        UPDATE(""),
-        DELETE(""),
+        UPDATE("UPDATE %s SET %s WHERE ID = ?"),
+        DELETE("DELETE FROM %s WHERE ID = ?"),
         DROP("DROP TABLE %s"), ;
         String template;
 
@@ -39,6 +39,14 @@ public enum QueryBuilder {
         return format(Query.INSERT.template, table.getName(), createQuestions(table.getColumnSize()));
     }
 
+    public <T> String update(TableEntity<T> table) {
+        return format(Query.UPDATE.template, table.getName(), createSetter(table.getNotIdColumnNames()));
+    }
+
+    public <T> String delete(TableEntity<T> table) {
+        return format(Query.DELETE.template, table.getName());
+    }
+
     private <T> String createColumnDefinitions(TableEntity<T> table) {
         List<String> definitions = new ArrayList<>();
         for (int i = 0; i < table.getColumnSize(); i++) {
@@ -49,6 +57,10 @@ public enum QueryBuilder {
 
     private String createQuestions(long num) {
         return range(0, num).mapToObj(l -> "?").collect(joinComma);
+    }
+
+    private String createSetter(List<String> columns) {
+        return columns.stream().collect(joining(" = ?, ", "", " = ?"));
     }
 
 }

@@ -15,24 +15,38 @@ import com.github.disc99.transaction.JdbcTransactionManager;
 public class QueryExecuter {
     private static final Logger logger = Logger.getLogger(QueryExecuter.class.getName());
 
-    <T> void create(Class<T> clazz) {
+    public <T> void create(Class<T> clazz) {
         TableEntity<T> table = new TableEntity<>(clazz);
         String sql = QueryBuilder.INSTANCE.create(table);
         logger.info(sql);
         execute(sql, uncheck(ps -> ps.executeUpdate()));
     }
 
-    <T> void drop(Class<T> clazz) {
+    public <T> void drop(Class<T> clazz) {
         TableEntity<T> table = new TableEntity<>(clazz);
         String sql = QueryBuilder.INSTANCE.drop(table);
         logger.info(sql);
         execute(sql, uncheck(ps -> ps.executeUpdate()));
     }
 
-    <T> void insert(T entity) {
+    public <T> void insert(T entity) {
 
         TableEntity<T> table = new TableEntity<>(entity.getClass());
         String sql = QueryBuilder.INSTANCE.insert(table);
+        logger.info(sql);
+        execute(sql, uncheck(ps -> {
+            for (int i = 0; i < table.getColumnSize(); i++) {
+                // Set PreparedStatement parameter
+                PreparedStatementSetterMapping.INSTANCE.getSetter(table.getColumnClass(i))
+                        .set(ps, i + 1, table.invokeGetter(entity, i));
+            }
+            ps.executeUpdate();
+        }));
+    }
+
+    public <T> void update(T entity) {
+        TableEntity<T> table = new TableEntity<>(entity.getClass());
+        String sql = QueryBuilder.INSTANCE.update(table);
         logger.info(sql);
         execute(sql, uncheck(ps -> {
             for (int i = 0; i < table.getColumnSize(); i++) {

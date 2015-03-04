@@ -5,6 +5,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.persistence.Id;
 
 public class TableEntity<T> {
     private Class<?> clazz;
@@ -112,5 +115,12 @@ public class TableEntity<T> {
     public String getColumnName(int i) {
         // TODO snake case
         return getPropertyDescriptor(i).getDisplayName();
+    }
+
+    public List<String> getNotIdColumnNames() {
+        return getFields().stream()
+                .filter(f -> !f.isAnnotationPresent(Id.class))
+                .map(f -> f.getName())
+                .collect(Collectors.toList());
     }
 }

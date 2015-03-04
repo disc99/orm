@@ -80,6 +80,7 @@ public class EntityManagerImplTest {
         executer.create(Person.class);
 
         executer.insert(p);
+        executer.update(p);
 
         // execute(conn, SELECT_PERSON, uncheck(ps -> {
         // ResultSet rs = ps.executeQuery();
