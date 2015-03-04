@@ -17,6 +17,7 @@ public enum QueryBuilder {
         CREATE("CREATE TABLE %s(%s)"),
         INSERT("INSERT INTO %s VALUES (%s)"),
         SELECT("SELECT %s FROM %s"),
+        SELECT_ID("SELECT %s FROM %s WHERE ID = ?"),
         UPDATE("UPDATE %s SET %s WHERE ID = ?"),
         DELETE("DELETE FROM %s WHERE ID = ?"),
         DROP("DROP TABLE %s"), ;
@@ -47,6 +48,10 @@ public enum QueryBuilder {
         return format(Query.DELETE.template, table.getName());
     }
 
+    public <T> String selectId(TableEntity<T> table) {
+        return format(Query.SELECT_ID.template, createColumns(table.getColumnNames()), table.getName());
+    }
+
     private <T> String createColumnDefinitions(TableEntity<T> table) {
         List<String> definitions = new ArrayList<>();
         for (int i = 0; i < table.getColumnSize(); i++) {
@@ -63,4 +68,7 @@ public enum QueryBuilder {
         return columns.stream().collect(joining(" = ?, ", "", " = ?"));
     }
 
+    private Object createColumns(List<String> columns) {
+        return columns.stream().collect(joinComma);
+    }
 }

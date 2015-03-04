@@ -5,6 +5,7 @@ import static com.github.disc99.util.Throwables.uncheck;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -48,6 +49,7 @@ public class QueryExecuter {
         TableEntity<T> table = new TableEntity<>(entity.getClass());
         String sql = QueryBuilder.INSTANCE.update(table);
         logger.info(sql);
+        // TODO impl
         execute(sql, uncheck(ps -> {
             for (int i = 0; i < table.getColumnSize(); i++) {
                 // Set PreparedStatement parameter
@@ -56,6 +58,16 @@ public class QueryExecuter {
             }
             ps.executeUpdate();
         }));
+    }
+
+    public <T> List<T> selectAll(Class<T> clazz) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public <T> T selectOne(T entity) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     public void execute(String sql, Consumer<PreparedStatement> func) {

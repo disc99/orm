@@ -1,11 +1,12 @@
 package com.github.disc99.orm;
 
+import static java.util.stream.Collectors.toList;
+
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.Id;
 
@@ -76,51 +77,25 @@ public class TableEntity<T> {
         return getPropertyDescriptors().get(index);
     }
 
-    // public List<Column> getColumns() {
-    // // TODO Auto-generated method stub
-    // return null;
-    // }
-    //
-    // public String getName() {
-    // return cls.getSimpleName();
-    // }
-    //
-    // public List<String> getColumnNames() {
-    // return Stream.of(cls.getDeclaredFields())
-    // .map(f -> f.getName())
-    // .collect(toList());
-    // }
-    //
-    // public long getColumnCount() {
-    // return Stream.of(cls.getDeclaredFields())
-    // .map(f -> f.getName())
-    // .count();
-    // }
-    //
-    // public List<Getter<T>> getGetters() {
-    //
-    // List<Getter<T>> getters = new ArrayList<>();
-    //
-    // for (Field field : cls.getDeclaredFields()) {
-    // try {
-    // getters.add(new Getter<>(cls, field.getName()));
-    // } catch (Exception e) {
-    // // Ignore getter not found property
-    // }
-    // }
-    //
-    // return getters;
-    // }
-
     public String getColumnName(int i) {
-        // TODO snake case
         return getPropertyDescriptor(i).getDisplayName();
     }
 
     public List<String> getNotIdColumnNames() {
         return getFields().stream()
                 .filter(f -> !f.isAnnotationPresent(Id.class))
-                .map(f -> f.getName())
-                .collect(Collectors.toList());
+                .map(Field::getName)
+                .collect(toList());
+    }
+
+    public List<String> getColumnNames() {
+        return getFields().stream()
+                .map(Field::getName)
+                .collect(toList());
+    }
+
+    public static String toSnake(String camel) {
+        // TODO snake case
+        return camel;
     }
 }

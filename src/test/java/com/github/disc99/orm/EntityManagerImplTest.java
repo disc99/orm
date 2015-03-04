@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
@@ -80,15 +81,17 @@ public class EntityManagerImplTest {
         executer.create(Person.class);
 
         executer.insert(p);
-        executer.update(p);
+        // executer.update(p);
 
-        // execute(conn, SELECT_PERSON, uncheck(ps -> {
-        // ResultSet rs = ps.executeQuery();
-        // while (rs.next()) {
-        // System.out.println("ID=" + rs.getInt("ID") + " NAME=" +
-        // rs.getString("NAME"));
-        // }
-        // }));
+        List<Person> list = executer.selectAll(Person.class);
+        Person p2 = executer.selectOne(p);
+        execute(txManager.getConnection(), SELECT_PERSON, uncheck(ps -> {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                System.out.println("ID=" + rs.getInt("ID") + " NAME=" +
+                        rs.getString("NAME"));
+            }
+        }));
 
         executer.drop(Person.class);
 
