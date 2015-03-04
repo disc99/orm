@@ -48,7 +48,7 @@ public enum QueryBuilder {
     }
 
     private String createQuestions(long num) {
-        return range(0, num).mapToObj(l -> "? ").collect(joinComma);
+        return range(0, num).mapToObj(l -> "?").collect(joinComma);
     }
 
 }
