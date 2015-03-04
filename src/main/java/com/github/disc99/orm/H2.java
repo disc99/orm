@@ -28,6 +28,10 @@ public class H2 implements Database {
         typeMapping.put(String.class, "VARCHAR");
     }
 
+    public static final String URL = "jdbc:h2:file:~/test";
+    public static final String USER = "sa";
+    public static final String PASSWORD = "";
+
     @Override
     public String getType(Field field) {
         // TODO IDENTITY and more...

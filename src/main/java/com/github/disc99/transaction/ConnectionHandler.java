@@ -1,31 +1,44 @@
 package com.github.disc99.transaction;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import com.github.disc99.orm.H2;
 
 public final class ConnectionHandler {
+
+    private static final ThreadLocal<Connection> resource = new ThreadLocal<>();
+
     private ConnectionHandler() {
     }
 
-    public static Connection getConnection() {
-        // TODO Auto-generated method stub
-        return getInstance().conn;
+    public static Connection getConnection() throws SQLException {
+        Connection conn = resource.get();
+        if (conn == null) {
+            conn = DriverManager.getConnection(H2.URL, H2.USER, H2.PASSWORD);
+            resource.set(conn);
+        }
+        return conn;
     }
 
-    private static ThreadLocal holder = new ThreadLocal() {
-    };
-    // この変数をクラス変数のように扱いたい
-    private Connection conn = null;
-
-    // 外部からインスタンス化すらさせたくない場合はgetInstance()をprivateに
-    private static ConnectionHandler getInstance() {
-        return holder.get();
+    public static void closeConnection() throws SQLException {
+        Connection conn = resource.get();
+        resource.set(null);
+        if (conn != null) {
+            conn.close();
+        }
     }
 
-    public static void setConnection(Connection conn) {
-        getInstance().conn = conn;
+    public static void begin() throws SQLException {
+        getConnection().setAutoCommit(false);
     }
 
-    private static class ConnectionHolder {
+    public static void commit() throws SQLException {
+        getConnection().commit();
+    }
 
+    public static void rollback() throws SQLException {
+        getConnection().rollback();
     }
 }
