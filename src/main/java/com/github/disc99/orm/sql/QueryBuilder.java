@@ -13,8 +13,9 @@ public enum QueryBuilder {
     private static final Collector<CharSequence, ?, String> joinComma = joining(", ");
 
     private enum Query {
-        CREATE("CREATE TABLE %s(%s)"),
-        INSERT("INSERT INTO %s VALUES (%s)"),
+        CREATE_TABLE("CREATE TABLE %s(%s)"),
+        CREATE_SEQUENCE("CREATE SEQUENCE %s_SEQ AS %s START WITH 1"),
+        INSERT("INSERT INTO %s VALUES (NEXT VALUE FOR %s_SEQ, %s)"),
         SELECT("SELECT %s FROM %s"),
         SELECT_ID("SELECT %s FROM %s WHERE ID = ?"),
         UPDATE("UPDATE %s SET %s WHERE ID = ?"),
@@ -27,8 +28,12 @@ public enum QueryBuilder {
         }
     }
 
-    public <T> String create(EntityTable<T> table) {
-        return format(Query.CREATE.template, table.getName(), createColumnDefinitions(table));
+    public <T> String createTable(EntityTable<T> table) {
+        return format(Query.CREATE_TABLE.template, table.getName(), createColumnDefinitions(table));
+    }
+
+    public <T> String createSequence(EntityTable<T> table) {
+        return format(Query.CREATE_SEQUENCE.template, table.getName(), table.getIdColumn().getDefinetion());
     }
 
     public <T> String drop(EntityTable<T> table) {
@@ -36,7 +41,8 @@ public enum QueryBuilder {
     }
 
     public <T> String insert(EntityTable<T> table) {
-        return format(Query.INSERT.template, table.getName(), createQuestions(table.getColumns().size()));
+        return format(Query.INSERT.template, table.getName(), table.getName(), createQuestions(table.getColumns()
+                .size() - 1));
     }
 
     public <T> String update(EntityTable<T> table) {

@@ -1,6 +1,6 @@
 package com.github.disc99.orm.sql;
 
-import static com.github.disc99.orm.sql.Databases.camelToSnake;
+import static com.github.disc99.util.Databases.camelToSnake;
 import static java.util.stream.Collectors.toList;
 
 import java.beans.PropertyDescriptor;
@@ -32,15 +32,20 @@ public class EntityTable<T> {
                 .get();
     }
 
-    public List<String> getNotIdColumnNames() {
+    public List<EntityColumn> getNotIdColumns() {
         return getColumns().stream()
                 .filter(EntityColumn::isNotIdColumn)
-                .map(EntityColumn::getName)
                 .collect(toList());
     }
 
     public List<String> getColumnNames() {
         return getColumns().stream()
+                .map(EntityColumn::getName)
+                .collect(toList());
+    }
+
+    public List<String> getNotIdColumnNames() {
+        return getNotIdColumns().stream()
                 .map(EntityColumn::getName)
                 .collect(toList());
     }

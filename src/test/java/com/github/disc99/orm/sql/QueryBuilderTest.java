@@ -1,4 +1,4 @@
-package com.github.disc99.orm;
+package com.github.disc99.orm.sql;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -8,10 +8,13 @@ import javax.persistence.Id;
 
 import org.junit.Test;
 
-import com.github.disc99.orm.sql.EntityTable;
-import com.github.disc99.orm.sql.QueryBuilder;
-
 public class QueryBuilderTest {
+
+    @Test
+    public void testCreateSequence() {
+        String actual = QueryBuilder.INSTANCE.createSequence(new EntityTable<>(Car.class));
+        assertThat(actual, is("CREATE SEQUENCE CAR_SEQ AS BIGINT START WITH 1"));
+    }
 
     @Test
     public void testUpdate() {

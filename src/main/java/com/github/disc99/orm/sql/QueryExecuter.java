@@ -23,8 +23,10 @@ public class QueryExecuter {
 
     public <T> void create(Class<T> clazz) {
         EntityTable<T> table = new EntityTable<>(clazz);
-        String sql = QueryBuilder.INSTANCE.create(table);
-        execute(sql, uncheck(ps -> ps.executeUpdate()));
+        String sqlTable = QueryBuilder.INSTANCE.createTable(table);
+        execute(sqlTable, uncheck(ps -> ps.executeUpdate()));
+        String sqlSeq = QueryBuilder.INSTANCE.createSequence(table);
+        execute(sqlSeq, uncheck(ps -> ps.executeUpdate()));
     }
 
     public <T> void drop(Class<T> clazz) {
@@ -37,32 +39,28 @@ public class QueryExecuter {
         EntityTable<T> table = new EntityTable<>(entity.getClass());
         String sql = QueryBuilder.INSTANCE.insert(table);
         execute(sql, uncheck(ps -> {
-            List<EntityColumn> columns = table.getColumns();
-            PreparedStatementSetter psSetter = new PreparedStatementSetter(ps);
-            IntStream.range(0, columns.size())
-                    .forEach(i -> {
-                        EntityColumn column = columns.get(i);
-                        psSetter.of(column.getClassType()).set(i + 1, column.getValue(entity));
-                    });
+            setPreparedStatement(entity, table.getNotIdColumns(), new PreparedStatementSetter(ps));
             ps.executeUpdate();
         }));
     }
 
-    // TODO
     public <T> void update(T entity) {
         EntityTable<T> table = new EntityTable<>(entity.getClass());
         String sql = QueryBuilder.INSTANCE.update(table);
         execute(sql, uncheck(ps -> {
-            List<EntityColumn> columns = table.getColumns();
-            PreparedStatementSetter psSetter = new PreparedStatementSetter(ps);
-            IntStream.range(0, columns.size())
-                    .forEach(i -> {
-                        EntityColumn column = columns.get(i);
-                        psSetter.of(column.getClassType()).set(i + 1, column.getValue(entity));
-                    });
+            List<EntityColumn> columns = table.getNotIdColumns();
+            columns.add(table.getIdColumn());
+            setPreparedStatement(entity, columns, new PreparedStatementSetter(ps));
             ps.executeUpdate();
         }));
+    }
 
+    private <T> void setPreparedStatement(T entity, List<EntityColumn> columns, PreparedStatementSetter psSetter) {
+        IntStream.range(0, columns.size())
+                .forEach(i -> {
+                    EntityColumn column = columns.get(i);
+                    psSetter.of(column.getClassType()).set(i + 1, column.getValue(entity));
+                });
     }
 
     public <T> Optional<List<T>> selectAll(Class<T> clazz) {
@@ -70,6 +68,7 @@ public class QueryExecuter {
         String sql = QueryBuilder.INSTANCE.selectAll(table);
 
         try (PreparedStatement ps = new JdbcTransactionManager().getConnection().prepareStatement(sql);) {
+            logger.info(sql);
             ResultSet rs = ps.executeQuery();
             List<EntityColumn> columns = table.getColumns();
 
@@ -87,9 +86,9 @@ public class QueryExecuter {
     public <T> Optional<T> selectId(T entity) {
         EntityTable<T> table = new EntityTable<>(entity.getClass());
         String sql = QueryBuilder.INSTANCE.selectId(table);
-        logger.info(sql);
 
         try (PreparedStatement ps = new JdbcTransactionManager().getConnection().prepareStatement(sql);) {
+            logger.info(sql);
             EntityColumn column = table.getIdColumn();
             new PreparedStatementSetter(ps).of(column.getClassType()).set(1, column.getValue(entity));
 
@@ -129,5 +128,4 @@ public class QueryExecuter {
             throw new DataAccessException(e);
         }
     }
-
 }

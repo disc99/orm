@@ -1,6 +1,6 @@
 package com.github.disc99.orm.sql;
 
-import static com.github.disc99.orm.sql.Databases.camelToSnake;
+import static com.github.disc99.util.Databases.camelToSnake;
 import static java.util.Objects.requireNonNull;
 
 import java.beans.IntrospectionException;
@@ -15,7 +15,7 @@ import com.github.disc99.orm.DataAccessException;
 class EntityColumn {
 
     private Field entityProperty;
-    private Database db = new H2(); // TODO inject or factory
+    private Database db = new Derby(); // TODO inject or factory
 
     public EntityColumn(Field entityProperty) {
         requireNonNull(entityProperty);

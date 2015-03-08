@@ -1,14 +1,16 @@
 package com.github.disc99.transaction;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import com.github.disc99.orm.sql.H2;
+import com.github.disc99.orm.sql.Database;
+import com.github.disc99.orm.sql.Derby;
 
 public final class ConnectionHandler {
 
     private static final ThreadLocal<Connection> resource = new ThreadLocal<>();
+
+    private static Database db = new Derby();
 
     private ConnectionHandler() {
     }
@@ -16,7 +18,7 @@ public final class ConnectionHandler {
     public static Connection getConnection() throws SQLException {
         Connection conn = resource.get();
         if (conn == null) {
-            conn = DriverManager.getConnection(H2.URL, H2.USER, H2.PASSWORD);
+            conn = db.getDataSource().getConnection();
             resource.set(conn);
         }
         return conn;

@@ -1,4 +1,4 @@
-package com.github.disc99.orm.sql;
+package com.github.disc99.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
