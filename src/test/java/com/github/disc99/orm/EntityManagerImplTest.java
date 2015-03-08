@@ -1,76 +1,25 @@
 package com.github.disc99.orm;
 
-import static com.github.disc99.util.Throwables.uncheck;
-
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-import javax.persistence.EntityManager;
-
 import org.junit.Test;
 
+import com.github.disc99.orm.sql.QueryExecuter;
 import com.github.disc99.transaction.JdbcTransactionManager;
 
 public class EntityManagerImplTest {
-
-    private static final String URL = "jdbc:h2:file:~/test";
-    private static final String USER = "sa";
-    private static final String PASSWORD = "";
-
-    private static final String CREATE_PERSON = "CREATE TABLE PERSON(ID INT, NAME VARCHAR)";
-    private static final String INSERT_PERSON = "INSERT INTO PERSON VALUES (?, ?)";
-    private static final String SELECT_PERSON = "SELECT ID, NAME FROM PERSON ORDER BY ID";
-    private static final String DROP_PERSION = "DROP TABLE PERSON";
-
-    @Test
-    public void test() {
-        Person p = new Person();
-        p.setName("tom");
-
-        EntityManager em = new EntityManagerImpl();
-        em.persist(p);
-
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);) {
-
-            conn.setAutoCommit(false);
-
-            execute(conn, CREATE_PERSON, uncheck(ps -> ps.executeUpdate()));
-
-            execute(conn, INSERT_PERSON, uncheck(ps -> {
-                ps.setInt(1, 1956);
-                ps.setString(2, "Webster St.");
-                ps.executeUpdate();
-            }));
-
-            execute(conn, SELECT_PERSON, uncheck(ps -> {
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    System.out.println("ID=" + rs.getInt("ID") + " NAME=" + rs.getString("NAME"));
-                }
-            }));
-
-            execute(conn, DROP_PERSION, uncheck(ps -> ps.executeUpdate()));
-
-            conn.rollback();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @Test
     public void t2() throws Exception {
 
         Locale.setDefault(Locale.US);
 
-        Person p = new Person();
+        PersonTest p = new PersonTest();
         p.setId(10L);
-        p.setName("tom");
+        p.setSimpleName("tom");
 
         QueryExecuter executer = new QueryExecuter();
 
@@ -78,22 +27,17 @@ public class EntityManagerImplTest {
 
         txManager.begin();
 
-        executer.create(Person.class);
+        executer.create(PersonTest.class);
 
+        executer.insert(p);
+        p.setId(11L);
         executer.insert(p);
         // executer.update(p);
 
-        List<Person> list = executer.selectAll(Person.class);
-        Person p2 = executer.selectOne(p);
-        execute(txManager.getConnection(), SELECT_PERSON, uncheck(ps -> {
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                System.out.println("ID=" + rs.getInt("ID") + " NAME=" +
-                        rs.getString("NAME"));
-            }
-        }));
+        System.out.println(executer.selectId(p));
+        System.out.println(executer.selectAll(PersonTest.class));
 
-        executer.drop(Person.class);
+        executer.drop(PersonTest.class);
 
         txManager.rollback();
 

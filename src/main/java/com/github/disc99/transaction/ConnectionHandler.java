@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import com.github.disc99.orm.H2;
+import com.github.disc99.orm.sql.H2;
 
 public final class ConnectionHandler {
 
@@ -24,9 +24,12 @@ public final class ConnectionHandler {
 
     public static void closeConnection() throws SQLException {
         Connection conn = resource.get();
-        resource.set(null);
         if (conn != null) {
+            if (!conn.getAutoCommit()) {
+                return;
+            }
             conn.close();
+            resource.set(null);
         }
     }
 

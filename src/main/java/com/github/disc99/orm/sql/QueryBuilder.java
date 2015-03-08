@@ -1,10 +1,9 @@
-package com.github.disc99.orm;
+package com.github.disc99.orm.sql;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.LongStream.range;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collector;
 
@@ -28,36 +27,38 @@ public enum QueryBuilder {
         }
     }
 
-    public <T> String create(TableEntity<T> table) {
+    public <T> String create(EntityTable<T> table) {
         return format(Query.CREATE.template, table.getName(), createColumnDefinitions(table));
     }
 
-    public <T> String drop(TableEntity<T> table) {
+    public <T> String drop(EntityTable<T> table) {
         return format(Query.DROP.template, table.getName());
     }
 
-    public <T> String insert(TableEntity<T> table) {
-        return format(Query.INSERT.template, table.getName(), createQuestions(table.getColumnSize()));
+    public <T> String insert(EntityTable<T> table) {
+        return format(Query.INSERT.template, table.getName(), createQuestions(table.getColumns().size()));
     }
 
-    public <T> String update(TableEntity<T> table) {
+    public <T> String update(EntityTable<T> table) {
         return format(Query.UPDATE.template, table.getName(), createSetter(table.getNotIdColumnNames()));
     }
 
-    public <T> String delete(TableEntity<T> table) {
+    public <T> String delete(EntityTable<T> table) {
         return format(Query.DELETE.template, table.getName());
     }
 
-    public <T> String selectId(TableEntity<T> table) {
+    public <T> String selectId(EntityTable<T> table) {
         return format(Query.SELECT_ID.template, createColumns(table.getColumnNames()), table.getName());
     }
 
-    private <T> String createColumnDefinitions(TableEntity<T> table) {
-        List<String> definitions = new ArrayList<>();
-        for (int i = 0; i < table.getColumnSize(); i++) {
-            definitions.add(table.getColumnName(i) + " " + table.getColumnType(i));
-        }
-        return definitions.stream().collect(joinComma);
+    public <T> String selectAll(EntityTable<T> table) {
+        return format(Query.SELECT.template, createColumns(table.getColumnNames()), table.getName());
+    }
+
+    private <T> String createColumnDefinitions(EntityTable<T> table) {
+        return table.getColumns().stream()
+                .map(c -> c.getName() + " " + c.getDefinetion())
+                .collect(joinComma);
     }
 
     private String createQuestions(long num) {

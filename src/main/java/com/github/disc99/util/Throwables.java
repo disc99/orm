@@ -1,5 +1,6 @@
 package com.github.disc99.util;
 
+import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
 public final class Throwables {
@@ -10,17 +11,33 @@ public final class Throwables {
         return func;
     }
 
-    // public static <T, R> Function<T, R> uncheck(UncheckedFunction<T, R> func)
-    // {
-    // return func;
-    // }
+    public static <T> T uncheckCall(Callable<T> callable) {
+        try {
+            return callable.call();
+        } catch (Exception e) {
+            return sneakyThrow(e);
+        }
+    }
 
-    // public static boolean isThrow(Runnable func) {
-    // try {
-    // func.run();
-    // return false;
-    // } catch (Throwable e) {
-    // return true;
-    // }
-    // }
+    public static void uncheckRun(RunnableExc r) {
+        try {
+            r.run();
+        } catch (Exception e) {
+            sneakyThrow(e);
+        }
+    }
+
+    public interface RunnableExc {
+        void run() throws Exception;
+    }
+
+    public static <T> T sneakyThrow(Throwable e) {
+        return Throwables.<RuntimeException, T> sneakyThrow0(e);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <E extends Throwable, T> T sneakyThrow0(Throwable t) throws E {
+        throw (E) t;
+    }
+
 }

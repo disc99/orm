@@ -8,18 +8,21 @@ import javax.persistence.Id;
 
 import org.junit.Test;
 
+import com.github.disc99.orm.sql.EntityTable;
+import com.github.disc99.orm.sql.QueryBuilder;
+
 public class QueryBuilderTest {
 
     @Test
     public void testUpdate() {
-        String actual = QueryBuilder.INSTANCE.update(new TableEntity<>(Car.class));
-        assertThat(actual, is("UPDATE Car SET engine = ?, tire = ? WHERE ID = ?"));
+        String actual = QueryBuilder.INSTANCE.update(new EntityTable<>(Car.class));
+        assertThat(actual, is("UPDATE CAR SET ENGINE = ?, TIRE_NUM = ? WHERE ID = ?"));
     }
 
     @Test
     public void testSelect() {
-        String actual = QueryBuilder.INSTANCE.selectId(new TableEntity<>(Car.class));
-        assertThat(actual, is("SELECT id, engine, tire FROM Car WHERE ID = ?"));
+        String actual = QueryBuilder.INSTANCE.selectId(new EntityTable<>(Car.class));
+        assertThat(actual, is("SELECT ID, ENGINE, TIRE_NUM FROM CAR WHERE ID = ?"));
     }
 
 }
@@ -29,7 +32,7 @@ class Car {
     @Id
     private Long id;
     private String engine;
-    private int tire;
+    private int tireNum;
 
     public Long getId() {
         return id;
@@ -47,11 +50,12 @@ class Car {
         this.engine = engine;
     }
 
-    public int getTire() {
-        return tire;
+    public int getTireNum() {
+        return tireNum;
     }
 
-    public void setTire(int tire) {
-        this.tire = tire;
+    public void setTireNum(int tireNum) {
+        this.tireNum = tireNum;
     }
+
 }
