@@ -8,6 +8,9 @@ import javax.sql.DataSource;
 
 import org.apache.derby.jdbc.EmbeddedDataSource;
 
+import com.github.disc99.orm.Database;
+import com.github.disc99.orm.PersistenceConfig;
+
 public class Derby implements Database {
 
     private static final Map<Class<?>, String> typeMapping;
@@ -19,10 +22,6 @@ public class Derby implements Database {
         typeMapping.put(String.class, "VARCHAR(32672)");
     }
 
-    public static final String URL = "jdbc:h2:file:~/test";
-    public static final String USER = "sa";
-    public static final String PASSWORD = "";
-
     @Override
     public String getType(Field field) {
         // TODO IDENTITY and more...
@@ -32,9 +31,9 @@ public class Derby implements Database {
     @Override
     public DataSource getDataSource() {
         DataSource ds = new EmbeddedDataSource();
-        ((EmbeddedDataSource) ds).setUser("");
-        ((EmbeddedDataSource) ds).setPassword("");
-        ((EmbeddedDataSource) ds).setDatabaseName("data/testdb");
+        ((EmbeddedDataSource) ds).setUser(PersistenceConfig.INSTANCE.getUser());
+        ((EmbeddedDataSource) ds).setPassword(PersistenceConfig.INSTANCE.getPassword());
+        ((EmbeddedDataSource) ds).setDatabaseName("db/testdb");
         ((EmbeddedDataSource) ds).setCreateDatabase("create");
         return ds;
     }

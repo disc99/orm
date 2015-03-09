@@ -11,11 +11,14 @@ import java.lang.reflect.InvocationTargetException;
 import javax.persistence.Id;
 
 import com.github.disc99.orm.DataAccessException;
+import com.github.disc99.orm.Database;
+import com.github.disc99.orm.DatabaseFactory;
+import com.github.disc99.orm.PersistenceConfig;
 
 class EntityColumn {
 
     private Field entityProperty;
-    private Database db = new Derby(); // TODO inject or factory
+    private Database db = DatabaseFactory.INSTANCE.getDatabase(PersistenceConfig.INSTANCE);
 
     public EntityColumn(Field entityProperty) {
         requireNonNull(entityProperty);

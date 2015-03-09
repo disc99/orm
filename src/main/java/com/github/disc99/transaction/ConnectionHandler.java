@@ -3,14 +3,15 @@ package com.github.disc99.transaction;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import com.github.disc99.orm.sql.Database;
-import com.github.disc99.orm.sql.Derby;
+import com.github.disc99.orm.Database;
+import com.github.disc99.orm.DatabaseFactory;
+import com.github.disc99.orm.PersistenceConfig;
 
 public final class ConnectionHandler {
 
     private static final ThreadLocal<Connection> resource = new ThreadLocal<>();
 
-    private static Database db = new Derby();
+    private static Database db = DatabaseFactory.INSTANCE.getDatabase(PersistenceConfig.INSTANCE);
 
     private ConnectionHandler() {
     }

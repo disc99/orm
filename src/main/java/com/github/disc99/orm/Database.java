@@ -1,4 +1,4 @@
-package com.github.disc99.orm.sql;
+package com.github.disc99.orm;
 
 import java.lang.reflect.Field;
 

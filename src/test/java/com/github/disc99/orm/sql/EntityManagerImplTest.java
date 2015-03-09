@@ -27,11 +27,8 @@ public class EntityManagerImplTest {
         executer.insert(p);
         executer.insert(p);
         executer.insert(p);
-        executer.insert(p);
-        executer.insert(p);
-        p.setId(2L);
-        executer.insert(p);
 
+        p.setId(2L);
         p.setSimpleName("john");
         executer.update(p);
 
