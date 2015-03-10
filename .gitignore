@@ -3,5 +3,5 @@
 .project
 .settings/
 bin/
-data/
+db/
 derby.log

@@ -8,4 +8,8 @@ public interface Database {
     public String getType(Field field);
 
     public DataSource getDataSource();
+
+    public PreparedStatementSetter getPreparedStatementSetter();
+
+    public ResultSetGetter getResultSetGetter();
 }

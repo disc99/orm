@@ -9,24 +9,25 @@ import javax.persistence.Id;
 import org.junit.Test;
 
 import com.github.disc99.orm.EntityTable;
+import com.github.disc99.orm.derby.DerbyQueryBuilder;
 
 public class QueryBuilderTest {
 
     @Test
     public void testCreateSequence() {
-        String actual = QueryBuilder.INSTANCE.createSequence(new EntityTable<>(Car.class));
+        String actual = DerbyQueryBuilder.INSTANCE.createSequence(new EntityTable<>(Car.class));
         assertThat(actual, is("CREATE SEQUENCE CAR_SEQ AS BIGINT START WITH 1"));
     }
 
     @Test
     public void testUpdate() {
-        String actual = QueryBuilder.INSTANCE.update(new EntityTable<>(Car.class));
+        String actual = DerbyQueryBuilder.INSTANCE.update(new EntityTable<>(Car.class));
         assertThat(actual, is("UPDATE CAR SET ENGINE = ?, TIRE_NUM = ? WHERE ID = ?"));
     }
 
     @Test
     public void testSelect() {
-        String actual = QueryBuilder.INSTANCE.selectId(new EntityTable<>(Car.class));
+        String actual = DerbyQueryBuilder.INSTANCE.selectId(new EntityTable<>(Car.class));
         assertThat(actual, is("SELECT ID, ENGINE, TIRE_NUM FROM CAR WHERE ID = ?"));
     }
 

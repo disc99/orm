@@ -1,10 +1,12 @@
-package com.github.disc99.orm.sql;
+package com.github.disc99.orm;
 
 import java.util.Locale;
 
 import org.junit.Test;
 
 import com.github.disc99.orm.PersistenceConfig;
+import com.github.disc99.orm.QueryExecuter;
+import com.github.disc99.orm.derby.Derby;
 import com.github.disc99.transaction.JdbcTransactionManager;
 
 public class EntityManagerImplTest {
@@ -14,27 +16,27 @@ public class EntityManagerImplTest {
 
         init();
 
-        PersonTest p = new PersonTest();
-        p.setSimpleName("tom");
+        PersonInfo p = new PersonInfo();
+        p.setFullName("tom");
 
         JdbcTransactionManager txManager = new JdbcTransactionManager();
 
         txManager.begin();
 
-        QueryExecuter.INSTANCE.create(PersonTest.class);
+        QueryExecuter.INSTANCE.create(PersonInfo.class);
 
         QueryExecuter.INSTANCE.insert(p);
         QueryExecuter.INSTANCE.insert(p);
         QueryExecuter.INSTANCE.insert(p);
 
         p.setId(2L);
-        p.setSimpleName("john");
+        p.setFullName("john");
         QueryExecuter.INSTANCE.update(p);
 
         System.out.println(QueryExecuter.INSTANCE.selectId(p.getClass(), p.getId()));
-        System.out.println(QueryExecuter.INSTANCE.selectAll(PersonTest.class));
+        System.out.println(QueryExecuter.INSTANCE.selectAll(PersonInfo.class));
 
-        QueryExecuter.INSTANCE.drop(PersonTest.class);
+        QueryExecuter.INSTANCE.drop(PersonInfo.class);
 
         txManager.rollback();
 

@@ -13,7 +13,7 @@ import javax.persistence.Id;
 public class EntityColumn {
 
     private Field entityProperty;
-    private Database db = DatabaseFactory.INSTANCE.getDatabase(PersistenceConfig.INSTANCE);
+    private Database db = PersistenceConfig.INSTANCE.getDb();
 
     public EntityColumn(Field entityProperty) {
         requireNonNull(entityProperty);

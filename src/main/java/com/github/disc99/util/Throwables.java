@@ -1,14 +1,9 @@
 package com.github.disc99.util;
 
 import java.util.concurrent.Callable;
-import java.util.function.Consumer;
 
 public final class Throwables {
     private Throwables() {
-    }
-
-    public static <T> Consumer<T> uncheck(UncheckedConsumer<T> func) {
-        return func;
     }
 
     public static <T> T uncheckCall(Callable<T> callable) {
@@ -27,7 +22,7 @@ public final class Throwables {
         }
     }
 
-    public interface RunnableExc {
+    private interface RunnableExc {
         void run() throws Exception;
     }
 

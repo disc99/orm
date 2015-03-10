@@ -1,4 +1,4 @@
-package com.github.disc99.orm.sql;
+package com.github.disc99.orm.derby;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -10,6 +10,8 @@ import org.apache.derby.jdbc.EmbeddedDataSource;
 
 import com.github.disc99.orm.Database;
 import com.github.disc99.orm.PersistenceConfig;
+import com.github.disc99.orm.PreparedStatementSetter;
+import com.github.disc99.orm.ResultSetGetter;
 
 public class Derby implements Database {
 
@@ -36,5 +38,15 @@ public class Derby implements Database {
         ((EmbeddedDataSource) ds).setDatabaseName("db/testdb");
         ((EmbeddedDataSource) ds).setCreateDatabase("create");
         return ds;
+    }
+
+    @Override
+    public PreparedStatementSetter getPreparedStatementSetter() {
+        return new DerbyPreparedStatementSetter();
+    }
+
+    @Override
+    public ResultSetGetter getResultSetGetter() {
+        return new DerbyResultSetGetter();
     }
 }

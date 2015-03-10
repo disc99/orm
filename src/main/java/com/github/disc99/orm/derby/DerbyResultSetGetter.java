@@ -1,13 +1,14 @@
-package com.github.disc99.orm.sql;
+package com.github.disc99.orm.derby;
 
 import static com.github.disc99.util.Throwables.uncheckCall;
-import static java.util.Objects.requireNonNull;
 
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ResultSetGetter {
+import com.github.disc99.orm.ResultSetGetter;
+
+public class DerbyResultSetGetter implements ResultSetGetter {
     private final Map<Class<?>, StringGetter> mapping;
     {
         mapping = new HashMap<>();
@@ -18,17 +19,13 @@ public class ResultSetGetter {
     }
     private ResultSet rs;
 
-    public ResultSetGetter(ResultSet rs) {
-        requireNonNull(rs);
+    @Override
+    public void setResultSet(ResultSet rs) {
         this.rs = rs;
     }
 
-    public StringGetter of(Class<?> clazz) {
+    @Override
+    public StringGetter type(Class<?> clazz) {
         return mapping.get(clazz);
-    }
-
-    @FunctionalInterface
-    public interface StringGetter {
-        public Object get(String key);
     }
 }

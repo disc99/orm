@@ -1,11 +1,12 @@
-package com.github.disc99.orm.sql;
+package com.github.disc99.orm.derby;
 
 import static com.github.disc99.util.Throwables.uncheckRun;
-import static java.util.Objects.requireNonNull;
 
 import java.sql.PreparedStatement;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.github.disc99.orm.PreparedStatementSetter;
 
 /**
  * {@link PreparedStatement} setter.
@@ -20,7 +21,7 @@ import java.util.Map;
  * @author daisuke
  *
  */
-public class PreparedStatementSetter {
+public class DerbyPreparedStatementSetter implements PreparedStatementSetter {
     private Map<Class<?>, IntSetter> mapping;
     {
         mapping = new HashMap<>();
@@ -31,17 +32,13 @@ public class PreparedStatementSetter {
     }
     private PreparedStatement ps;
 
-    public PreparedStatementSetter(PreparedStatement ps) {
-        requireNonNull(ps);
+    @Override
+    public void setPreparedStatement(PreparedStatement ps) {
         this.ps = ps;
     }
 
-    public IntSetter of(Class<?> clazz) {
+    @Override
+    public IntSetter type(Class<?> clazz) {
         return mapping.get(clazz);
-    }
-
-    @FunctionalInterface
-    public interface IntSetter {
-        public void set(int num, Object obj);
     }
 }
