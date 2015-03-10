@@ -7,6 +7,8 @@ import static java.util.stream.LongStream.range;
 import java.util.List;
 import java.util.stream.Collector;
 
+import com.github.disc99.orm.EntityTable;
+
 public enum QueryBuilder {
     INSTANCE;
 

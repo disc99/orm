@@ -15,9 +15,12 @@ import java.util.stream.IntStream;
 import javax.transaction.SystemException;
 
 import com.github.disc99.orm.DataAccessException;
+import com.github.disc99.orm.EntityColumn;
+import com.github.disc99.orm.EntityTable;
 import com.github.disc99.transaction.JdbcTransactionManager;
 
-public class QueryExecuter {
+public enum QueryExecuter {
+    INSTANCE;
 
     private static final Logger logger = Logger.getLogger(QueryExecuter.class.getName());
 
@@ -83,21 +86,20 @@ public class QueryExecuter {
         }
     }
 
-    public <T> Optional<T> selectId(T entity) {
-        EntityTable<T> table = new EntityTable<>(entity.getClass());
+    public <T> Optional<T> selectId(Class<T> clazz, Object primaryKey) {
+        EntityTable<T> table = new EntityTable<>(clazz);
         String sql = QueryBuilder.INSTANCE.selectId(table);
 
         try (PreparedStatement ps = new JdbcTransactionManager().getConnection().prepareStatement(sql);) {
             logger.info(sql);
             EntityColumn column = table.getIdColumn();
-            new PreparedStatementSetter(ps).of(column.getClassType()).set(1, column.getValue(entity));
+            new PreparedStatementSetter(ps).of(column.getClassType()).set(1, primaryKey);
 
             ResultSet rs = ps.executeQuery();
             List<EntityColumn> columns = table.getColumns();
 
             while (rs.next()) {
-                @SuppressWarnings("unchecked")
-                T instance = (T) createInstance(entity.getClass(), columns, rs);
+                T instance = (T) createInstance(clazz, columns, rs);
                 return Optional.of(instance);
             }
             return Optional.empty();

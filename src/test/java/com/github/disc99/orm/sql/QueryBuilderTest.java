@@ -8,6 +8,8 @@ import javax.persistence.Id;
 
 import org.junit.Test;
 
+import com.github.disc99.orm.EntityTable;
+
 public class QueryBuilderTest {
 
     @Test

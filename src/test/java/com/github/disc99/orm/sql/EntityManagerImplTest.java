@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+import com.github.disc99.orm.PersistenceConfig;
 import com.github.disc99.transaction.JdbcTransactionManager;
 
 public class EntityManagerImplTest {
@@ -11,33 +12,38 @@ public class EntityManagerImplTest {
     @Test
     public void test() throws Exception {
 
-        Locale.setDefault(Locale.US);
+        init();
 
         PersonTest p = new PersonTest();
         p.setSimpleName("tom");
-
-        QueryExecuter executer = new QueryExecuter();
 
         JdbcTransactionManager txManager = new JdbcTransactionManager();
 
         txManager.begin();
 
-        executer.create(PersonTest.class);
+        QueryExecuter.INSTANCE.create(PersonTest.class);
 
-        executer.insert(p);
-        executer.insert(p);
-        executer.insert(p);
+        QueryExecuter.INSTANCE.insert(p);
+        QueryExecuter.INSTANCE.insert(p);
+        QueryExecuter.INSTANCE.insert(p);
 
         p.setId(2L);
         p.setSimpleName("john");
-        executer.update(p);
+        QueryExecuter.INSTANCE.update(p);
 
-        System.out.println(executer.selectId(p));
-        System.out.println(executer.selectAll(PersonTest.class));
+        System.out.println(QueryExecuter.INSTANCE.selectId(p.getClass(), p.getId()));
+        System.out.println(QueryExecuter.INSTANCE.selectAll(PersonTest.class));
 
-        executer.drop(PersonTest.class);
+        QueryExecuter.INSTANCE.drop(PersonTest.class);
 
         txManager.rollback();
 
+    }
+
+    private void init() {
+        Locale.setDefault(Locale.US);
+        PersistenceConfig.INSTANCE.setDb(new Derby());
+        PersistenceConfig.INSTANCE.setUser("sa");
+        PersistenceConfig.INSTANCE.setPassword("");
     }
 }

@@ -8,10 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * PreparedStatement setter.
+ * {@link PreparedStatement} setter.
  * 
  * <p>
- * ex) ps.set(1,10);<br>
+ * ex) ps.setInt(1,10);<br>
  * {@code
  * PreparedStatementSetter pss = new PreparedStatementSetter(rs);
  * pss.of(Interger.class).set(1 ,10);

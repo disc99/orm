@@ -1,4 +1,4 @@
-package com.github.disc99.orm.sql;
+package com.github.disc99.orm;
 
 import static com.github.disc99.util.Databases.camelToSnake;
 import static java.util.stream.Collectors.toList;

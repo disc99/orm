@@ -1,4 +1,4 @@
-package com.github.disc99.orm.sql;
+package com.github.disc99.orm;
 
 import static com.github.disc99.util.Databases.camelToSnake;
 import static java.util.Objects.requireNonNull;
@@ -10,12 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.persistence.Id;
 
-import com.github.disc99.orm.DataAccessException;
-import com.github.disc99.orm.Database;
-import com.github.disc99.orm.DatabaseFactory;
-import com.github.disc99.orm.PersistenceConfig;
-
-class EntityColumn {
+public class EntityColumn {
 
     private Field entityProperty;
     private Database db = DatabaseFactory.INSTANCE.getDatabase(PersistenceConfig.INSTANCE);
