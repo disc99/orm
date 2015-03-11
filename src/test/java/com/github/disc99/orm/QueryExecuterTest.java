@@ -18,12 +18,13 @@ public class QueryExecuterTest {
         PersistenceConfig.INSTANCE.setUser("sa");
         PersistenceConfig.INSTANCE.setPassword("");
 
-        //
-        // QueryExecuter.INSTANCE.create(PersonInfo.class);
+        // CREATE TABLE PERSON_INFO(ID BIGINT, FULL_NAME VARCHAR(32672))
+        QueryExecuter.INSTANCE.create(PersonInfo.class);
 
         PersonInfo pi1 = new PersonInfo();
         pi1.setFullName("Tom Broun");
-        //
+
+        // INSERT INTO PERSON_INFO VALUES (NEXT VALUE FOR PERSON_INFO_SEQ, ?)
         QueryExecuter.INSTANCE.insert(pi1);
 
         pi1.setFullName("Tom Brown");
