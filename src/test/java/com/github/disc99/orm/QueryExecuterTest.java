@@ -28,18 +28,20 @@ public class QueryExecuterTest {
         QueryExecuter.INSTANCE.insert(pi1);
 
         pi1.setFullName("Tom Brown");
-        //
+        // UPDATE PERSON_INFO SET FULL_NAME = ? WHERE ID = ?
         QueryExecuter.INSTANCE.update(pi1);
 
-        //
-        Optional<PersonInfo> pi2 = QueryExecuter.INSTANCE.selectId(PersonInfo.class, 1);
-        //
+        // SELECT ID, FULL_NAME FROM PERSON_INFO WHERE ID = ?
+        // Optional<PersonInfo> pi2 =
+        QueryExecuter.INSTANCE.selectId(PersonInfo.class, 1);
+
+        // SELECT ID, FULL_NAME FROM PERSON_INFO
         Optional<List<PersonInfo>> pi3 = QueryExecuter.INSTANCE.selectAll(PersonInfo.class);
 
-        //
+        // DELETE FROM PERSON_INFO WHERE ID = ?
         QueryExecuter.INSTANCE.delete(PersonInfo.class, 1);
 
-        //
+        // DROP TABLE PERSON_INFO
         QueryExecuter.INSTANCE.drop(PersonInfo.class);
     }
 

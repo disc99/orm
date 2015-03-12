@@ -108,9 +108,15 @@ public enum QueryExecuter {
 
     }
 
-    public void delete(Class<PersonInfo> class1, int i) {
-        // TODO Auto-generated method stub
-
+    public <T> void delete(Class<T> clazz, Object primaryKey) {
+        EntityTable<T> table = new EntityTable<>(clazz);
+        String sql = DerbyQueryBuilder.INSTANCE.delete(table);
+        execute(sql, ps -> {
+            List<EntityColumn> columns = table.getNotIdColumns();
+            columns.add(table.getIdColumn());
+            setPreparedStatement(primaryKey, columns, PreparedStatementSetterFactory.create(ps));
+            uncheckCall(() -> ps.executeUpdate());
+        });
     }
 
     private <T> T createInstance(Class<T> clazz, List<EntityColumn> columns, ResultSet rs)
