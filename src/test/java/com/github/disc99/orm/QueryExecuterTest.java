@@ -32,7 +32,6 @@ public class QueryExecuterTest {
         QueryExecuter.INSTANCE.update(pi1);
 
         // SELECT ID, FULL_NAME FROM PERSON_INFO WHERE ID = ?
-        // Optional<PersonInfo> pi2 =
         QueryExecuter.INSTANCE.selectId(PersonInfo.class, 1);
 
         // SELECT ID, FULL_NAME FROM PERSON_INFO
