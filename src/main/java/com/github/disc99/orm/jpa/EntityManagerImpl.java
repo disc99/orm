@@ -1,4 +1,4 @@
-package com.github.disc99.orm;
+package com.github.disc99.orm.jpa;
 
 import java.util.List;
 import java.util.Map;
