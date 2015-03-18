@@ -1,43 +1,75 @@
-# app-server
+# orm
 orm is minimal ORMapper.
 
 ## How to use
 
 ```java
+@Entity
+public class PersonInfo {
+    @Id
+    private Long id;
+    private String fullName;
 
-JdbcTransactionManager txManager = new JdbcTransactionManager();
-txManager.begin();
+    public Long getId() {
+        return id;
+    }
 
-// CREATE TABLE PERSON_INFO(ID BIGINT, FULL_NAME VARCHAR(32672))
-// CREATE SEQUENCE %s_SEQ AS PERSON_INFO START WITH 1
-QueryExecuter.INSTANCE.create(PersonInfo.class);
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-PersonInfo pi = new PersonInfo();
-pi.setFullName("Tom Broun");
+    public String getFullName() {
+        return fullName;
+    }
 
-// INSERT INTO PERSON_INFO VALUES (NEXT VALUE FOR PERSON_INFO_SEQ, 'Tom Broun')
-QueryExecuter.INSTANCE.insert(pi);
+    public void setFullName(String name) {
+        this.fullName = name;
+    }
+}
 
-pi.setId(1L);
-pi.setFullName("Tom Brown");
-// UPDATE PERSON_INFO SET FULL_NAME = 'Tom Brown' WHERE ID = 1
-QueryExecuter.INSTANCE.update(pi);
+public class QueryExecuterTest {
 
-// SELECT ID, FULL_NAME FROM PERSON_INFO WHERE ID = 1
-Optional<PersonInfo> piOne = QueryExecuter.INSTANCE.selectId(PersonInfo.class, 1L);
+    @Test
+    public void test() throws Exception {
 
-// SELECT ID, FULL_NAME FROM PERSON_INFO
-Optional<List<PersonInfo>> piAll = QueryExecuter.INSTANCE.selectAll(PersonInfo.class);
+        PersistenceConfig.INSTANCE.setDb(new Derby());
+        PersistenceConfig.INSTANCE.setUser("sa");
+        PersistenceConfig.INSTANCE.setPassword("");
 
-// DELETE FROM PERSON_INFO WHERE ID = 1
-QueryExecuter.INSTANCE.delete(PersonInfo.class, 1L);
+		JdbcTransactionManager txManager = new JdbcTransactionManager();
+		txManager.begin();
 
-// DROP TABLE PERSON_INFO
-// DROP SEQUENCE PERSON_INFO_SEQ RESTRICT
-QueryExecuter.INSTANCE.drop(PersonInfo.class);
+		// CREATE TABLE PERSON_INFO(ID BIGINT, FULL_NAME VARCHAR(32672))
+		// CREATE SEQUENCE %s_SEQ AS PERSON_INFO START WITH 1
+		QueryExecuter.INSTANCE.create(PersonInfo.class);
 
-txManager.rollback();
+		PersonInfo pi = new PersonInfo();
+		pi.setFullName("Tom Broun");
 
+		// INSERT INTO PERSON_INFO VALUES (NEXT VALUE FOR PERSON_INFO_SEQ, 'Tom Broun')
+		QueryExecuter.INSTANCE.insert(pi);
+
+		pi.setId(1L);
+		pi.setFullName("Tom Brown");
+		// UPDATE PERSON_INFO SET FULL_NAME = 'Tom Brown' WHERE ID = 1
+		QueryExecuter.INSTANCE.update(pi);
+
+		// SELECT ID, FULL_NAME FROM PERSON_INFO WHERE ID = 1
+		Optional<PersonInfo> piOne = QueryExecuter.INSTANCE.selectId(PersonInfo.class, 1L);
+
+		// SELECT ID, FULL_NAME FROM PERSON_INFO
+		Optional<List<PersonInfo>> piAll = QueryExecuter.INSTANCE.selectAll(PersonInfo.class);
+
+		// DELETE FROM PERSON_INFO WHERE ID = 1
+		QueryExecuter.INSTANCE.delete(PersonInfo.class, 1L);
+
+		// DROP TABLE PERSON_INFO
+		// DROP SEQUENCE PERSON_INFO_SEQ RESTRICT
+		QueryExecuter.INSTANCE.drop(PersonInfo.class);
+
+		txManager.rollback();
+	}
+}
 ```
 
 
