@@ -23,7 +23,8 @@ public enum DerbyQueryBuilder implements QueryBuilder {
         SELECT_ID("SELECT %s FROM %s WHERE ID = ?"),
         UPDATE("UPDATE %s SET %s WHERE ID = ?"),
         DELETE("DELETE FROM %s WHERE ID = ?"),
-        DROP("DROP TABLE %s"), ;
+        DROP_TABLE("DROP TABLE %s"),
+        DROP_SEQUENCE("DROP SEQUENCE %s_SEQ RESTRICT"), ;
         String template;
 
         private Query(String template) {
@@ -42,8 +43,13 @@ public enum DerbyQueryBuilder implements QueryBuilder {
     }
 
     @Override
-    public <T> String drop(EntityTable<T> table) {
-        return format(Query.DROP.template, table.getName());
+    public <T> String dropTable(EntityTable<T> table) {
+        return format(Query.DROP_TABLE.template, table.getName());
+    }
+
+    @Override
+    public <T> String dropSequence(EntityTable<T> table) {
+        return format(Query.DROP_SEQUENCE.template, table.getName());
     }
 
     @Override

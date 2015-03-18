@@ -6,7 +6,9 @@ public interface QueryBuilder {
 
     <T> String createSequence(EntityTable<T> table);
 
-    <T> String drop(EntityTable<T> table);
+    <T> String dropTable(EntityTable<T> table);
+
+    <T> String dropSequence(EntityTable<T> table);
 
     <T> String insert(EntityTable<T> table);
 
@@ -17,4 +19,5 @@ public interface QueryBuilder {
     <T> String selectId(EntityTable<T> table);
 
     <T> String selectAll(EntityTable<T> table);
+
 }

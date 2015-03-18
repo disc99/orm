@@ -39,6 +39,7 @@ public class DerbyPreparedStatementSetter implements PreparedStatementSetter {
 
     @Override
     public IntSetter type(Class<?> clazz) {
-        return mapping.get(clazz);
+        IntSetter setter = mapping.get(clazz);
+        return setter;
     }
 }

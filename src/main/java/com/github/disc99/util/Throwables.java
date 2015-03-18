@@ -22,7 +22,7 @@ public final class Throwables {
         }
     }
 
-    private interface RunnableExc {
+    public interface RunnableExc {
         void run() throws Exception;
     }
 

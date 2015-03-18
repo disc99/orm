@@ -32,8 +32,10 @@ public enum QueryExecuter {
 
     public <T> void drop(Class<T> clazz) {
         EntityTable<T> table = new EntityTable<>(clazz);
-        String sql = DerbyQueryBuilder.INSTANCE.drop(table);
-        execute(sql, ps -> uncheckCall(() -> ps.executeUpdate()));
+        String sqlTable = DerbyQueryBuilder.INSTANCE.dropTable(table);
+        execute(sqlTable, ps -> uncheckCall(() -> ps.executeUpdate()));
+        String sqlSeq = DerbyQueryBuilder.INSTANCE.dropSequence(table);
+        execute(sqlSeq, ps -> uncheckCall(() -> ps.executeUpdate()));
     }
 
     public <T> void insert(T entity) {
@@ -60,7 +62,6 @@ public enum QueryExecuter {
         IntStream.range(0, columns.size())
                 .forEach(i -> {
                     EntityColumn column = columns.get(i);
-                    System.out.println(column);
                     psSetter.type(column.getClassType()).set(i + 1, column.getValue(entity));
                 });
     }
@@ -112,9 +113,8 @@ public enum QueryExecuter {
         EntityTable<T> table = new EntityTable<>(clazz);
         String sql = DerbyQueryBuilder.INSTANCE.delete(table);
         execute(sql, ps -> {
-            List<EntityColumn> columns = table.getNotIdColumns();
-            columns.add(table.getIdColumn());
-            setPreparedStatement(primaryKey, columns, PreparedStatementSetterFactory.create(ps));
+            EntityColumn column = table.getIdColumn();
+            PreparedStatementSetterFactory.create(ps).type(column.getClassType()).set(1, primaryKey);
             uncheckCall(() -> ps.executeUpdate());
         });
     }
